@@ -199,7 +199,12 @@ function findLatestJsonl(dir) {
     const files = fs.readdirSync(dir)
       .filter(f => f.endsWith('.jsonl'))
       .filter(f => !DANMU_LIVE_ID || f.startsWith(DANMU_LIVE_ID))
-      .sort() // 文件名含时间戳，字典序 = 时间序
+      .sort((a, b) => {
+        // 按时间戳部分排序（文件名格式: {live_id}_{YYYYMMDD_HHMMSS}.jsonl）
+        const tsA = a.replace('.jsonl', '').split('_').slice(1).join('_')
+        const tsB = b.replace('.jsonl', '').split('_').slice(1).join('_')
+        return tsA.localeCompare(tsB)
+      })
     return files.length > 0 ? path.join(dir, files[files.length - 1]) : null
   } catch {
     return null
