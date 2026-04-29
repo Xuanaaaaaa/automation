@@ -1,0 +1,6 @@
+{"type":"danmu_query","trace_id":"test-001","ts":"2026-04-29 10:00:00","raw_text":"查北京产品经理 本科","keyword":"产品经理","city":"北京","education":"本科","query_payload":{"education":"本科","intention_job":["产品经理"],"intention_location":["北京"],"job_type":null,"company_type":null,"intention_company":null}}
+{"type":"danmu_query","trace_id":"test-002","ts":"2026-04-29 10:01:00","raw_text":"Java开发 硕士","keyword":"Java开发","city":null,"education":"硕士","query_payload":{"education":"硕士","intention_job":["Java开发"],"intention_location":null,"job_type":"全职","company_type":"央国企","intention_company":null}}
+{"ts":"2026-04-29 10:02:00","raw_text":"查上海会计","keyword":"会计","city":"上海","education":null,"query_payload":{"education":null,"intention_job":["会计"],"intention_location":["上海"],"job_type":null,"company_type":null,"intention_company":"中国银行"}}
+{"type":"danmu_query","trace_id":"test-live-001","ts":"2026-04-29 11:28:00","raw_text":"查北京产品经理 本科","keyword":"产品经理","city":"北京","education":"本科","query_payload":{"education":"本科","intention_job":["产品经理"],"intention_location":["北京"],"job_type":null,"company_type":null,"intention_company":null}}
+{"type":"automation_started","trace_id":"test-live-001","ts":"2026-04-29 03:28:19","criteria":{"position":"产品经理","education":"本科","city":"北京"}}
+{"type":"automation_done","trace_id":"test-live-001","ts":"2026-04-29 03:29:13","status":"ok"}
