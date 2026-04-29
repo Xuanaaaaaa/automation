@@ -1,0 +1,10 @@
+[
+  { "position": "Java开发", "education": "本科", "companyType": "央国企" },
+  { "position": "产品经理", "education": "硕士", "job_type": "全职" },
+  { "position": "会计", "company": "中国银行", "education": "本科" },
+  { "position": "前端开发", "education": "本科", "companyType": "私企大厂" },
+  { "position": "人力资源", "education": "本科", "job_type": "全职" },
+  { "position": "数据分析师", "company": "腾讯", "education": "硕士" },
+  { "position": "市场营销", "education": "本科", "companyType": "知名外企" },
+  { "position": "机械工程师", "education": "本科", "job_type": "全职" }
+]
