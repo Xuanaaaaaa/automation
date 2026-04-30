@@ -30,6 +30,7 @@ const POLL_INTERVAL_MS = parseInt(process.env.POLL_INTERVAL_MS || '2000', 10)
 
 const RUN_ID = new Date().toISOString().replace(/[:.]/g, '-').slice(0, 19)
 const RUN_DIR = path.join(__dirname, 'test-runs', `watch-${RUN_ID}`)
+const STATUS_JSONL = process.env.AUTOMATION_STATUS_JSONL || path.join(RUN_DIR, 'status.jsonl')
 
 // ── 工具函数 ──────────────────────────────────────────────────────
 
@@ -436,43 +437,35 @@ async function main() {
       queue.push(async () => {
         if (shutdownRequested) return
 
-        const jsonlPath = findLatestJsonl(DANMU_JSONL_DIR)
-
         // 写入 started 事件
-        if (jsonlPath) {
-          writeStatusEvent(jsonlPath, {
-            type: 'automation_started',
-            trace_id: traceId,
-            ts: now(),
-            criteria,
-          })
-        }
+        writeStatusEvent(STATUS_JSONL, {
+          type: 'automation_started',
+          trace_id: traceId,
+          ts: now(),
+          criteria,
+        })
 
         try {
           await runOneCycle(mp, criteria, idx)
 
           // 写入 done 事件
-          if (jsonlPath) {
-            writeStatusEvent(jsonlPath, {
-              type: 'automation_done',
-              trace_id: traceId,
-              ts: now(),
-              status: 'ok',
-            })
-          }
+          writeStatusEvent(STATUS_JSONL, {
+            type: 'automation_done',
+            trace_id: traceId,
+            ts: now(),
+            status: 'ok',
+          })
         } catch (err) {
           log(`[error] cycle #${idx} failed: ${err.message}`)
 
           // 写入 failed 事件
-          if (jsonlPath) {
-            writeStatusEvent(jsonlPath, {
-              type: 'automation_failed',
-              trace_id: traceId,
-              ts: now(),
-              status: 'failed',
-              error: err.message,
-            })
-          }
+          writeStatusEvent(STATUS_JSONL, {
+            type: 'automation_failed',
+            trace_id: traceId,
+            ts: now(),
+            status: 'failed',
+            error: err.message,
+          })
         }
       })
     }
