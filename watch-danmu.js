@@ -11,7 +11,7 @@
  *   DEDUP_WINDOW_MS         (可选) 去重窗口，默认 30000ms
  *   POLL_INTERVAL_MS        (可选) 轮询间隔，默认 2000ms
  *   WECHAT_DEVTOOLS_CLI     (可选) DevTools CLI 路径
- *   WECHAT_MINIPROGRAM_PROJECT (可选) 小程序项目路径
+ *   WECHAT_MINIPROGRAM_PROJECT (可选) 小程序项目路径，macOS 默认 ../aibz/dist/build/mp-weixin
  *   WECHAT_AUTO_PORT        (可选) DevTools 端口，默认 9420
  */
 
@@ -19,7 +19,7 @@ const fs = require('fs')
 const path = require('path')
 const crypto = require('crypto')
 const {
-  initLogging, log, connect, ensureLoggedIn, runOneCycle, sleep
+  initLogging, log, connect, ensureLoggedIn, runOneCycle, sleep, normalizeCityName
 } = require('./lib/automation-core')
 
 // ── 配置 ──────────────────────────────────────────────────────────
@@ -65,13 +65,15 @@ function toAutomationCriteria(record) {
 
   const education = record.education || payload.education
 
+  const city = normalizeCityName(record.city || first(payload.intention_location))
+
   return compact({
     position: record.keyword || first(payload.intention_job),
     company: payload.intention_company,
     education: EDU_WHITELIST.includes(education) ? education : undefined,
     companyType: payload.company_type,
     job_type: payload.job_type,
-    city: record.city || first(payload.intention_location),
+    city,
   })
 }
 
