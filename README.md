@@ -5,17 +5,35 @@ Automated end-to-end testing for the AIBZ WeChat mini-program using `miniprogram
 ## Prerequisites
 
 - **Node.js** installed and available on PATH
-- **WeChat DevTools** installed at `D:/software/微信web开发者工具/`
-- **Project source** at `D:\aibz` (builds to `dist/dev/mp-weixin`)
+- **WeChat DevTools** installed locally
+- **Mini-program project** compiled to an `mp-weixin` directory
 - **miniprogram-automator** installed (`npm install miniprogram-automator`)
 
 ## Setup Steps
 
-### 1. Open WeChat DevTools with the project
+### 1. Initialize local paths
 
-Launch DevTools and open the compiled project directory `D:/aibz/dist/dev/mp-weixin`.
+Run this once after cloning the repository:
 
-### 2. Enable service ports
+```bash
+node scripts/init-local-config.js
+```
+
+The wizard writes local machine settings to `config/local.jsonl`, including:
+
+- WeChat DevTools CLI path
+- Mini-program `mp-weixin` build path
+- DevTools automation port
+- Danmu JSONL output directory
+- Local `NO_PROXY` setting
+
+`config/local.jsonl` is ignored by git. Environment variables still override it when needed.
+
+### 2. Open WeChat DevTools with the project
+
+Launch DevTools and open the compiled project directory configured as `wechatMiniprogramProject`.
+
+### 3. Enable service ports
 
 In DevTools, go to **Settings > Security** and enable:
 
@@ -24,12 +42,15 @@ In DevTools, go to **Settings > Security** and enable:
 
 Both must be on for the automator WebSocket connection to work.
 
-### 3. Start automation mode
+### 4. Start automation mode
 
-Run from a terminal:
+Usually the script starts automation mode automatically. To start it manually, use the configured CLI path and project path:
 
-```bat
-D:\software\微信web开发者工具\cli.bat auto --project D:/aibz/dist/dev/mp-weixin --auto-port 9420
+```bash
+"/Applications/wechatwebdevtools.app/Contents/MacOS/cli" auto \
+  --project "/path/to/aibz/dist/build/mp-weixin" \
+  --auto-port 9420 \
+  --trust-project
 ```
 
 This opens a **new** DevTools instance in automation mode, listening on `ws://127.0.0.1:9420`.
@@ -38,7 +59,7 @@ This opens a **new** DevTools instance in automation mode, listening on `ws://12
 
 The Windows process name is `微信开发者工具` (Chinese). Searching for "wechat" or "微信web开发者工具" in a process list will not find it.
 
-### 4. Verify connection
+### 5. Verify connection
 
 After the auto-mode instance finishes loading, you can confirm the port is open:
 

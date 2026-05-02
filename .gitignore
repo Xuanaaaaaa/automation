@@ -1,4 +1,8 @@
 node_modules/
 test-runs/
 screenshots/
+截图/
 *.log
+.DS_Store
+config/local.json
+config/local.jsonl
