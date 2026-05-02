@@ -19,7 +19,7 @@ const fs = require('fs')
 const path = require('path')
 const crypto = require('crypto')
 const {
-  initLogging, log, connect, ensureLoggedIn, runOneCycle, sleep, normalizeCityName
+  initLogging, log, connect, ensureLoggedIn, runOneCycle, sleep, normalizeCityName, normalizeGraduateTime
 } = require('./lib/automation-core')
 
 // ── 配置 ──────────────────────────────────────────────────────────
@@ -66,11 +66,13 @@ function toAutomationCriteria(record) {
   const education = record.education || payload.education
 
   const city = normalizeCityName(record.city || first(payload.intention_location))
+  const graduateTime = normalizeGraduateTime(record.graduate_time || payload.graduate_time)
 
   return compact({
     position: record.keyword || first(payload.intention_job),
     company: payload.intention_company,
     education: EDU_WHITELIST.includes(education) ? education : undefined,
+    graduate_time: graduateTime,
     companyType: payload.company_type,
     job_type: payload.job_type,
     city,
@@ -117,6 +119,7 @@ class DedupeCache {
       criteria.position || '',
       criteria.company || '',
       criteria.education || '',
+      criteria.graduate_time || '',
       criteria.companyType || '',
       criteria.job_type || '',
       criteria.city || '',
