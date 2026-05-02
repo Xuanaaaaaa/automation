@@ -3,9 +3,16 @@
 ## 前置条件
 
 1. **微信开发者工具**已打开，且安全设置中开启了"服务端口"
-2. 小程序已编译到 `D:/aibz/dist/dev/mp-weixin`（或通过环境变量指定其他路径）
+2. 小程序已编译到 `mp-weixin` 产物目录，且目录内有 `project.config.json`
 3. Node.js >= 14
-4. Ubuntu 上的弹幕解析程序已启动并正在输出 JSONL
+4. 弹幕解析程序已启动并正在输出 JSONL
+5. 首次运行前已完成本机配置初始化：
+
+```bash
+node scripts/init-local-config.js
+```
+
+初始化会生成 `config/local.jsonl`，保存本机 DevTools CLI、mp-weixin 产物路径、自动化端口和弹幕 JSONL 输出目录。
 
 ## 启动步骤
 
@@ -17,15 +24,12 @@
 /home/hermes/auto-live-room/弹幕提取/DouyinLiveWebFetcher/output/{live_id}_{时间戳}.jsonl
 ```
 
-### 第二步：Windows 上启动 watcher
+### 第二步：启动 watcher
 
-打开 PowerShell 或 CMD，进入小程序项目目录，执行：
+进入本仓库目录，执行：
 
-```powershell
-cd D:\workspace\aibz
-
-$env:DANMU_JSONL_DIR = "\\wsl$\Ubuntu\home\hermes\auto-live-room\弹幕提取\DouyinLiveWebFetcher\output"
-node automation\watch-danmu.js
+```bash
+node watch-danmu.js
 ```
 
 启动后脚本会自动：
@@ -34,20 +38,27 @@ node automation\watch-danmu.js
 3. 监听 JSONL 文件，等待新弹幕写入
 4. 每条新弹幕自动执行一轮小程序搜索（打开筛选 → 填条件 → 搜索 → 浏览详情）
 
-## 环境变量
+## 本地配置和环境变量
 
-### 必填
+推荐把本机长期配置写入 `config/local.jsonl`：
 
-| 变量 | 说明 | 示例 |
-|------|------|------|
-| `DANMU_JSONL_DIR` | JSONL 输出目录的 Windows 路径 | `\\wsl$\Ubuntu\home\hermes\auto-live-room\弹幕提取\DouyinLiveWebFetcher\output` |
+```json
+{"wechatDevtoolsCli":"/Applications/wechatwebdevtools.app/Contents/MacOS/cli","wechatMiniprogramProject":"/Users/your-name/workspace/aibz/dist/build/mp-weixin","wechatAutoPort":9420,"danmuJsonlDir":"/path/to/DouyinLiveWebFetcher/output","noProxy":"127.0.0.1,localhost,::1"}
+```
 
-### 可选
+读取优先级：
+
+```text
+环境变量 > config/local.jsonl > config/local.json > 内置默认值
+```
+
+等价环境变量：
 
 | 变量 | 默认值 | 说明 |
 |------|--------|------|
-| `WECHAT_DEVTOOLS_CLI` | `D:/software/微信web开发者工具/cli.bat` | DevTools CLI 路径 |
-| `WECHAT_MINIPROGRAM_PROJECT` | `D:/aibz/dist/dev/mp-weixin` | 小程序编译产物路径 |
+| `DANMU_JSONL_DIR` | `config/local.jsonl` 中的 `danmuJsonlDir` | JSONL 输出目录 |
+| `WECHAT_DEVTOOLS_CLI` | 系统内置默认值 | DevTools CLI 路径 |
+| `WECHAT_MINIPROGRAM_PROJECT` | 系统内置默认值 | 小程序编译产物路径 |
 | `WECHAT_AUTO_PORT` | `9420` | DevTools WebSocket 端口 |
 | `DEDUP_WINDOW_MS` | `30000` | 去重窗口（毫秒），相同条件在此时间内不重复执行 |
 | `POLL_INTERVAL_MS` | `2000` | 文件轮询间隔（毫秒） |
@@ -56,26 +67,25 @@ node automation\watch-danmu.js
 ## 完整启动命令（PowerShell）
 
 ```powershell
-cd D:\workspace\aibz
+cd D:\workspace\automation
 
-# 最简启动（使用默认配置）
-$env:DANMU_JSONL_DIR = "\\wsl$\Ubuntu\home\hermes\auto-live-room\弹幕提取\DouyinLiveWebFetcher\output"
-node automation\watch-danmu.js
+# 最简启动（使用 config/local.jsonl）
+node watch-danmu.js
 
 # 指定多个参数
 $env:DANMU_JSONL_DIR = "\\wsl$\Ubuntu\home\hermes\auto-live-room\弹幕提取\DouyinLiveWebFetcher\output"
 $env:DEDUP_WINDOW_MS = "60000"
 $env:POLL_INTERVAL_MS = "3000"
-node automation\watch-danmu.js
+node watch-danmu.js
 ```
 
 ## 完整启动命令（CMD）
 
 ```cmd
-cd /d D:\workspace\aibz
+cd /d D:\workspace\automation
 
 set DANMU_JSONL_DIR=\\wsl$\Ubuntu\home\hermes\auto-live-room\弹幕提取\DouyinLiveWebFetcher\output
-node automation\watch-danmu.js
+node watch-danmu.js
 ```
 
 ## 运行时行为
@@ -108,5 +118,5 @@ test-runs/watch-2026-04-29T03-38-27/
 
 ## 已知限制
 
-- **城市筛选**：筛选弹窗中城市只有区域选项（京津冀/江浙沪/川渝），当前默认选第一个区域。详见 `KNOWN-ISSUES.md`。
 - **弹幕解析精度**：岗位关键词由弹幕解析模块提取，可能存在截断（如"后端工程师"被解析为"后端"）。这是弹幕解析模块的问题，不在本脚本控制范围内。
+- **本机代理**：如果设置了 `http_proxy/https_proxy`，建议在 `config/local.jsonl` 中保留 `noProxy`，避免本地 DevTools WebSocket 被代理影响。

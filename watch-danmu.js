@@ -21,12 +21,13 @@ const crypto = require('crypto')
 const {
   initLogging, log, connect, ensureLoggedIn, runOneCycle, sleep, normalizeCityName, normalizeGraduateTime
 } = require('./lib/automation-core')
+const { readConfigValue } = require('./lib/local-config')
 
 // ── 配置 ──────────────────────────────────────────────────────────
-const DANMU_JSONL_DIR = process.env.DANMU_JSONL_DIR
-const DANMU_LIVE_ID = process.env.DANMU_LIVE_ID || ''
-const DEDUP_WINDOW_MS = parseInt(process.env.DEDUP_WINDOW_MS || '30000', 10)
-const POLL_INTERVAL_MS = parseInt(process.env.POLL_INTERVAL_MS || '2000', 10)
+const DANMU_JSONL_DIR = readConfigValue('DANMU_JSONL_DIR', ['danmuJsonlDir', 'DANMU_JSONL_DIR'])
+const DANMU_LIVE_ID = readConfigValue('DANMU_LIVE_ID', ['danmuLiveId', 'DANMU_LIVE_ID'], '')
+const DEDUP_WINDOW_MS = parseInt(readConfigValue('DEDUP_WINDOW_MS', ['dedupWindowMs', 'DEDUP_WINDOW_MS'], '30000'), 10)
+const POLL_INTERVAL_MS = parseInt(readConfigValue('POLL_INTERVAL_MS', ['pollIntervalMs', 'POLL_INTERVAL_MS'], '2000'), 10)
 
 const RUN_ID = new Date().toISOString().replace(/[:.]/g, '-').slice(0, 19)
 const RUN_DIR = path.join(__dirname, 'test-runs', `watch-${RUN_ID}`)
