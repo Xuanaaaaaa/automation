@@ -19,7 +19,8 @@ const fs = require('fs')
 const path = require('path')
 const crypto = require('crypto')
 const {
-  initLogging, log, connect, ensureLoggedIn, runOneCycle, sleep, normalizeCityName, normalizeGraduateTime
+  initLogging, log, connect, ensureLoggedIn, runOneCycle, sleep, normalizeCityName, normalizeGraduateTime,
+  navigateToPositionList
 } = require('./lib/automation-core')
 const { readConfigValue } = require('./lib/local-config')
 
@@ -472,6 +473,14 @@ async function main() {
             status: 'failed',
             error: err.message,
           })
+        } finally {
+          if (!shutdownRequested) {
+            try {
+              await navigateToPositionList(mp)
+            } catch (err) {
+              log(`[idle] failed to navigate to position list: ${err.message}`)
+            }
+          }
         }
       })
     }
